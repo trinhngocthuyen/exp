@@ -1,0 +1,35 @@
+name: cocoapods-spm-87
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Username (default: trinhngocthuyen)'
+        required: true
+        type: string
+        default: trinhngocthuyen
+      ref:
+        description: 'Ref (default: main)'
+        required: true
+        type: string
+        default: main
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.3.app
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+      - run: |
+          mkdir -p /tmp/cocoapods-spm
+          cd /tmp/cocoapods-spm && git init
+          git remote add origin https://github.com/${{ inputs.username}}/cocoapods-spm.git
+          git fetch origin
+          git checkout ${{ inputs.ref }}
+          make ci.install ex.test
+      - run: rm -rf /tmp/cocoapods-spm
+        shell: bash
+        if: always()
