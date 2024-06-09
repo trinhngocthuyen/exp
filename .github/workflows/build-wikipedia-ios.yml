@@ -1,0 +1,26 @@
+name: build-wikipedia-ios.yml
+on:
+  workflow_dispatch:
+    inputs:
+      xcode-version:
+        description: 'Xcode version'
+        required: true
+        type: string
+        default: '15.3'
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode-version }}.app
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: wikimedia/wikipedia-ios
+      - run: |
+          set -o pipefail && xcodebuild build -derivedDataPath DerivedData -scheme Wikipedia -destination 'generic/platform=iOS Simulator' | xcbeautify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'Wikipedia.app'
+          path: 'DerivedData/Build/Products/Debug-iphonesimulator/Wikipedia.app'
