@@ -1,0 +1,21 @@
+name: try-xccache.yml
+on:
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.3.app
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+      - uses: actions/checkout@v4
+        with:
+          repository: trinhngocthuyen/xccache
+      - run: bundle install --verbose
+      - run: |
+          cd examples
+          bundle exec xccache --verbose --ansi
